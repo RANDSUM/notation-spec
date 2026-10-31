@@ -52,7 +52,7 @@
     "randsum"
   ],
   "devDependencies": {
-    "@randsum/roller": "^4.0.0",
+    "@randsum/roller": "file:./vendor/roller",
     "@types/bun": "1.4.0",
     "bunup": "0.16.32",
     "typescript": "7.0.2"

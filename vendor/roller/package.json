@@ -1,0 +1,65 @@
+{
+  "name": "@randsum/roller",
+  "description": "TypeScript dice engine implementing the RANDSUM Dice Notation (RDN) specification for tabletop RPGs. Built from RANDSUM/randsum@d6c00e9304ff6b16248647721dc88bc1396f7d05 (the last roller change before the sync) for the reference adapter.",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": true,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./roll": {
+      "import": {
+        "types": "./dist/roll/index.d.ts",
+        "default": "./dist/roll/index.js"
+      }
+    },
+    "./errors": {
+      "import": {
+        "types": "./dist/errors.d.ts",
+        "default": "./dist/errors.js"
+      }
+    },
+    "./validate": {
+      "import": {
+        "types": "./dist/validate.d.ts",
+        "default": "./dist/validate.js"
+      }
+    },
+    "./tokenize": {
+      "import": {
+        "types": "./dist/tokenize.d.ts",
+        "default": "./dist/tokenize.js"
+      }
+    },
+    "./docs": {
+      "import": {
+        "types": "./dist/docs/index.d.ts",
+        "default": "./dist/docs/index.js"
+      }
+    },
+    "./trace": {
+      "import": {
+        "types": "./dist/trace/index.d.ts",
+        "default": "./dist/trace/index.js"
+      }
+    },
+    "./random": {
+      "import": {
+        "types": "./dist/random.d.ts",
+        "default": "./dist/random.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RANDSUM/randsum.git",
+    "directory": "packages/roller"
+  }
+}
