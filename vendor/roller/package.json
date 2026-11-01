@@ -1,6 +1,6 @@
 {
   "name": "@randsum/roller",
-  "description": "TypeScript dice engine implementing the RANDSUM Dice Notation (RDN) specification for tabletop RPGs. Built from RANDSUM/randsum@b25559a95333174bc874a3da8e195afd09601819 (the last roller change before the sync) for the reference adapter.",
+  "description": "TypeScript dice engine implementing the RANDSUM Dice Notation (RDN) specification for tabletop RPGs. Built from RANDSUM/randsum@98a2f5008fcaeeacbfa309dade694d0c4bb838ac (the last roller change before the sync) for the reference adapter.",
   "version": "4.0.0",
   "private": true,
   "type": "module",

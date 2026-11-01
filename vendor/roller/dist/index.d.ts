@@ -639,7 +639,7 @@ interface Token {
 * descriptions. There is no separate pattern table here anymore.
 */
 declare function tokenize(notation: string): readonly Token[];
-/** The RDN faceted category of a modifier token. */
+/** The RDN faceted category of a modifier lexeme. */
 type ModifierCategory = "Core" | "Special" | "Order" | "Clamp" | "Map" | "Filter" | "Substitute" | "Generate" | "Accumulate" | "Scale" | "Reinterpret" | "Dispatch";
 type TokenCategory = ModifierCategory | "unknown";
 /**

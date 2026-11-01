@@ -107,7 +107,7 @@ interface RollOptions<T = string> {
 	*/
 	label?: string | undefined;
 }
-/** The RDN faceted category of a modifier token. */
+/** The RDN faceted category of a modifier lexeme. */
 type ModifierCategory = "Core" | "Special" | "Order" | "Clamp" | "Map" | "Filter" | "Substitute" | "Generate" | "Accumulate" | "Scale" | "Reinterpret" | "Dispatch";
 interface NotationDoc {
 	readonly key: string;

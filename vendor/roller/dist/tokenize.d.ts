@@ -1,4 +1,4 @@
-/** The RDN faceted category of a modifier token. */
+/** The RDN faceted category of a modifier lexeme. */
 type ModifierCategory = "Core" | "Special" | "Order" | "Clamp" | "Map" | "Filter" | "Substitute" | "Generate" | "Accumulate" | "Scale" | "Reinterpret" | "Dispatch";
 type TokenCategory = ModifierCategory | "unknown";
 interface Token {
