@@ -1,3 +1,78 @@
+/**
+* Centralized error codes for all RANDSUM errors.
+* Use these constants instead of raw strings for consistency.
+*/
+declare const ERROR_CODES: {
+	/** Invalid dice notation syntax */
+	readonly INVALID_NOTATION: "INVALID_NOTATION";
+	/** Error applying a modifier */
+	readonly MODIFIER_ERROR: "MODIFIER_ERROR";
+	/** Input validation failed */
+	readonly VALIDATION_ERROR: "VALIDATION_ERROR";
+	/** General roll execution error */
+	readonly ROLL_ERROR: "ROLL_ERROR";
+};
+/**
+* Closed literal union of every RANDSUM error code.
+*
+* The union is exhaustive: it contains only the codes declared in
+* {@link ERROR_CODES}, so consumers can `switch` over an `ErrorCode` and have
+* TypeScript verify every case is handled.
+*/
+type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+/**
+* Optional structured context for a RANDSUM error.
+*
+* Populated by throw sites that know additional details about the failure.
+* Consumers may read any of these fields to present richer diagnostics
+* (e.g. highlight the offending character in an input, show which option
+* field failed validation, log the raw value that triggered the error).
+*
+* All fields are optional — throw sites only include what they know.
+*/
+interface ErrorContext {
+	/** Dotted path to the offending option field, e.g. `'quantity'`, `'modifiers.drop.lowest'`. */
+	readonly path?: string;
+	/** The offending value (kept as `unknown` so callers type-narrow before use). */
+	readonly value?: unknown;
+	/** The notation string associated with the failure, when relevant. */
+	readonly notation?: string;
+	/** Zero-indexed character offset in the notation string, when known. */
+	readonly position?: number;
+}
+/**
+* Base error class for all RANDSUM errors.
+* All custom errors in the RANDSUM ecosystem should extend this class.
+*
+* The class is generic over its `code` type. The roller's own errors use the
+* closed {@link ErrorCode} union (so consumers can switch exhaustively), while
+* downstream packages that extend `RandsumError` may specialize `Code` with
+* their own literal union (e.g. `@randsum/games`'s `SchemaError`). `Code`
+* defaults to `string` so a bare `extends RandsumError` can still carry an
+* arbitrary code — the honest base type, since a caught `RandsumError` may be
+* any subclass.
+*/
+declare class RandsumError<Code extends string = string> extends Error {
+	readonly code: Code;
+	readonly context: ErrorContext | undefined;
+	constructor(message: string, code: Code, context?: ErrorContext);
+}
+/**
+* Error thrown when a string is not valid dice notation.
+*/
+declare class NotationParseError extends RandsumError<ErrorCode> {
+	readonly suggestion: string | undefined;
+	constructor(notation: string, reason: string, suggestion?: string, context?: ErrorContext);
+}
+declare class ModifierError extends RandsumError<ErrorCode> {
+	constructor(modifierType: string, reason: string, context?: ErrorContext);
+}
+declare class ValidationError extends RandsumError<ErrorCode> {
+	constructor(message: string, context?: ErrorContext);
+}
+declare class RollError extends RandsumError<ErrorCode> {
+	constructor(message: string, context?: ErrorContext);
+}
 interface ComparisonOptions {
 	/** Threshold for "greater than" comparisons (strict: roll > N) */
 	greaterThan?: number;
@@ -178,6 +253,12 @@ interface ValidationErrorInfo {
 	* unexpected/invalid token). Populated by the single-pass parser.
 	*/
 	position?: number;
+	/**
+	* Which check failed: `INVALID_NOTATION` when the string is not notation (or
+	* breaks a repeat limit), otherwise the code of the error `roll()` would throw
+	* for it, such as `MODIFIER_ERROR` for `2d6L3`.
+	*/
+	code?: ErrorCode;
 }
 /**
 * Failed validation result.
@@ -241,8 +322,8 @@ type CustomFacesNotation = `${"d" | "D"}{${string}}` | `${number}${"d" | "D"}{${
 */
 type DrawDieNotation = `${"dd" | "DD" | "Dd" | "dD"}${number}` | `${number}${"dd" | "DD" | "Dd" | "dD"}${number}`;
 /**
-* Geometric die notation — roll until first 1, count attempts.
-* `g6` rolls a d6 again on each 6 and sums every roll.
+* Geometric die notation: roll dN again while it shows N, summing every roll.
+* `g6` rolls a d6, and again on each 6; the result is the sum of the rolls.
 * Supports quantity prefix: `3g6` performs 3 independent geometric rolls.
 *
 * Case-insensitive: g6 and G6 are equivalent.
@@ -275,7 +356,11 @@ type RandomFn = () => number;
 * Configuration options for roll execution.
 */
 interface RollConfig {
-	/** Custom random function (default: Math.random) */
+	/**
+	* Custom random function (default: Math.random). Every call must return a
+	* number in [0, 1), as Math.random does. The roller does not check: a value
+	* outside that range yields faces the die does not have (a d6 showing 31).
+	*/
 	randomFn?: RandomFn;
 }
 /**
@@ -337,7 +422,7 @@ interface RollParams<T = string> extends Required<Omit<RollOptions<T>, "sides" |
 	numericFaces?: readonly number[];
 	/** Draw without replacement (DD notation) */
 	draw?: true;
-	/** Geometric die: roll again on each max face, sum every roll */
+	/** Geometric die: each die rolls again while it shows its maximum, summing every roll */
 	geometric?: true;
 	/** Original input argument */
 	argument: RollArgument<T>;
@@ -538,81 +623,6 @@ declare function validateInteger(value: number, name: string): asserts value is 
 declare function validateRange(value: number, min: number, max: number, name: string): void;
 declare function validateNonNegative(value: number, name: string): void;
 declare function validateFinite(value: number, name: string): void;
-/**
-* Centralized error codes for all RANDSUM errors.
-* Use these constants instead of raw strings for consistency.
-*/
-declare const ERROR_CODES: {
-	/** Invalid dice notation syntax */
-	readonly INVALID_NOTATION: "INVALID_NOTATION";
-	/** Error applying a modifier */
-	readonly MODIFIER_ERROR: "MODIFIER_ERROR";
-	/** Input validation failed */
-	readonly VALIDATION_ERROR: "VALIDATION_ERROR";
-	/** General roll execution error */
-	readonly ROLL_ERROR: "ROLL_ERROR";
-};
-/**
-* Closed literal union of every RANDSUM error code.
-*
-* The union is exhaustive: it contains only the codes declared in
-* {@link ERROR_CODES}, so consumers can `switch` over an `ErrorCode` and have
-* TypeScript verify every case is handled.
-*/
-type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
-/**
-* Optional structured context for a RANDSUM error.
-*
-* Populated by throw sites that know additional details about the failure.
-* Consumers may read any of these fields to present richer diagnostics
-* (e.g. highlight the offending character in an input, show which option
-* field failed validation, log the raw value that triggered the error).
-*
-* All fields are optional — throw sites only include what they know.
-*/
-interface ErrorContext {
-	/** Dotted path to the offending option field, e.g. `'quantity'`, `'modifiers.drop.lowest'`. */
-	readonly path?: string;
-	/** The offending value (kept as `unknown` so callers type-narrow before use). */
-	readonly value?: unknown;
-	/** The notation string associated with the failure, when relevant. */
-	readonly notation?: string;
-	/** Zero-indexed character offset in the notation string, when known. */
-	readonly position?: number;
-}
-/**
-* Base error class for all RANDSUM errors.
-* All custom errors in the RANDSUM ecosystem should extend this class.
-*
-* The class is generic over its `code` type. The roller's own errors use the
-* closed {@link ErrorCode} union (so consumers can switch exhaustively), while
-* downstream packages that extend `RandsumError` may specialize `Code` with
-* their own literal union (e.g. `@randsum/games`'s `SchemaError`). `Code`
-* defaults to `string` so a bare `extends RandsumError` can still carry an
-* arbitrary code — the honest base type, since a caught `RandsumError` may be
-* any subclass.
-*/
-declare class RandsumError<Code extends string = string> extends Error {
-	readonly code: Code;
-	readonly context: ErrorContext | undefined;
-	constructor(message: string, code: Code, context?: ErrorContext);
-}
-/**
-* Error thrown when a string is not valid dice notation.
-*/
-declare class NotationParseError extends RandsumError<ErrorCode> {
-	readonly suggestion: string | undefined;
-	constructor(notation: string, reason: string, suggestion?: string, context?: ErrorContext);
-}
-declare class ModifierError extends RandsumError<ErrorCode> {
-	constructor(modifierType: string, reason: string, context?: ErrorContext);
-}
-declare class ValidationError extends RandsumError<ErrorCode> {
-	constructor(message: string, context?: ErrorContext);
-}
-declare class RollError extends RandsumError<ErrorCode> {
-	constructor(message: string, context?: ErrorContext);
-}
 interface Token {
 	readonly text: string;
 	readonly key: string;

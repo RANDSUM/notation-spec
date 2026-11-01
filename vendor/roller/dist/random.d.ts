@@ -58,7 +58,7 @@ interface QueueRandomOptions {
 * @throws Error if the queue is exhausted before all calls are satisfied
 *
 * @public Published on the ./random subpath for external replay/audit consumers;
-* in-repo usage flows through test-utils, outside knip's project globs.
+* in-repo, the notation-spec reference adapter and roller's tests use it.
 */
 declare function createQueueRandom(options: QueueRandomOptions): RandomFn;
 export { QueueRandomOptions, RandomFn, createQueueRandom, createSeededRandom };

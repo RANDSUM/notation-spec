@@ -1,4 +1,0 @@
-var n={INVALID_NOTATION:"INVALID_NOTATION",MODIFIER_ERROR:"MODIFIER_ERROR",VALIDATION_ERROR:"VALIDATION_ERROR",ROLL_ERROR:"ROLL_ERROR"};class e extends Error{code;context;constructor(r,o,t){super(r);this.name="RandsumError",this.code=o,this.context=t}}class E extends e{suggestion;constructor(r,o,t,s){let i=t?`Invalid notation "${r}": ${o}. Did you mean "${t}"?`:`Invalid notation "${r}": ${o}`,R={notation:r,...s};super(i,n.INVALID_NOTATION,R);this.name="NotationParseError",this.suggestion=t}}class d extends e{constructor(r,o,t){super(`Modifier error for "${r}": ${o}`,n.MODIFIER_ERROR,t);this.name="ModifierError"}}class a extends e{constructor(r,o){super(`Validation error: ${r}`,n.VALIDATION_ERROR,o);this.name="ValidationError"}}class O extends e{constructor(r,o){super(r,n.ROLL_ERROR,o);this.name="RollError"}}
-export{n as q,e as r,E as s,d as t,a as u,O as v};
-
-//# debugId=B74F953245F7862364756E2164756E21

@@ -1,3 +1,25 @@
+/**
+* Centralized error codes for all RANDSUM errors.
+* Use these constants instead of raw strings for consistency.
+*/
+declare const ERROR_CODES: {
+	/** Invalid dice notation syntax */
+	readonly INVALID_NOTATION: "INVALID_NOTATION";
+	/** Error applying a modifier */
+	readonly MODIFIER_ERROR: "MODIFIER_ERROR";
+	/** Input validation failed */
+	readonly VALIDATION_ERROR: "VALIDATION_ERROR";
+	/** General roll execution error */
+	readonly ROLL_ERROR: "ROLL_ERROR";
+};
+/**
+* Closed literal union of every RANDSUM error code.
+*
+* The union is exhaustive: it contains only the codes declared in
+* {@link ERROR_CODES}, so consumers can `switch` over an `ErrorCode` and have
+* TypeScript verify every case is handled.
+*/
+type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 interface ComparisonOptions {
 	/** Threshold for "greater than" comparisons (strict: roll > N) */
 	greaterThan?: number;
@@ -152,6 +174,12 @@ interface ValidationErrorInfo {
 	* unexpected/invalid token). Populated by the single-pass parser.
 	*/
 	position?: number;
+	/**
+	* Which check failed: `INVALID_NOTATION` when the string is not notation (or
+	* breaks a repeat limit), otherwise the code of the error `roll()` would throw
+	* for it, such as `MODIFIER_ERROR` for `2d6L3`.
+	*/
+	code?: ErrorCode;
 }
 /**
 * Failed validation result.

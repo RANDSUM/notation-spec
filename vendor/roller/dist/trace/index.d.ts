@@ -162,8 +162,8 @@ type CustomFacesNotation = `${"d" | "D"}{${string}}` | `${number}${"d" | "D"}{${
 */
 type DrawDieNotation = `${"dd" | "DD" | "Dd" | "dD"}${number}` | `${number}${"dd" | "DD" | "Dd" | "dD"}${number}`;
 /**
-* Geometric die notation — roll until first 1, count attempts.
-* `g6` rolls a d6 again on each 6 and sums every roll.
+* Geometric die notation: roll dN again while it shows N, summing every roll.
+* `g6` rolls a d6, and again on each 6; the result is the sum of the rolls.
 * Supports quantity prefix: `3g6` performs 3 independent geometric rolls.
 *
 * Case-insensitive: g6 and G6 are equivalent.
@@ -246,7 +246,7 @@ interface RollParams<T = string> extends Required<Omit<RollOptions<T>, "sides" |
 	numericFaces?: readonly number[];
 	/** Draw without replacement (DD notation) */
 	draw?: true;
-	/** Geometric die: roll again on each max face, sum every roll */
+	/** Geometric die: each die rolls again while it shows its maximum, summing every roll */
 	geometric?: true;
 	/** Original input argument */
 	argument: RollArgument<T>;
