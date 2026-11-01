@@ -1,3 +1,0 @@
-import{c as l,h as d}from"./chunk-nkz2rs4m.js";import{s as a}from"./chunk-5r87va6v.js";import{S as s,X as p}from"./chunk-4v4z9pbw.js";function n(t,i,r){return{valid:!1,argument:t,error:{message:i,argument:t,...r!==void 0?{position:r}:{}}}}function u(t,i){try{return l(t,i)}catch(r){if(r instanceof a)return r;throw r}}function m(t){let i=typeof t==="string"?s(t):null;if(!i?.valid)return n(t,`Invalid dice notation: "${t}"`,i?.error?.position);let r=u(t,i);if(r instanceof a)return n(t,r.message,r.context?.position);let o=r;return{valid:!0,argument:t,options:o,notation:o.map((e)=>d(e)),description:o.map((e)=>p(e)),error:null}}export{m as b};
-
-//# debugId=A166700452C3E03064756E2164756E21
